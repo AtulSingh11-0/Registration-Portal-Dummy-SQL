@@ -7,19 +7,14 @@ const {
 // importing the above methods from studentModel
 
 
-// this function will handle get all student data
-async function handleGetStudents (req, res) {
-  try {
-    const result = await getStudents();
-    if(!result)
-      return res.status(404).render('no-records');
-    return res.status(200).send(result);
-  } catch (error) {
-    return res.status(500).send(error);
-  }
-}
+// this function will render the registration page
 async function handleRegistration (req, res) {
-  res.render('home');
+  try {
+    res.status(200).render('home');
+  } catch (error) {
+    console.error(error);
+    res.status(400).render('dynamicPage',{ message: 'Failed to Load the Page'});
+  }
 }
 
 // this function will handle creation of a student
@@ -34,6 +29,14 @@ async function handleCreateStudent (req, res) {
       roll,
       year
     } = req.body;
+    const datas = await getStudents();
+    datas.forEach( (data) => {
+      if(data.email == email ||
+         data.phone == phone ||
+         data.roll == roll) {
+          return res.status(409).render('dynamicPage',{ message: 'Duplicate Entry'});
+         }
+    });
     const result = await createStudent(college,
       department,
       email,
@@ -42,45 +45,15 @@ async function handleCreateStudent (req, res) {
       roll,
       year
     );
-    return res.status(201).render('registration-successful', { result });
-    // return res.status(201).send(`Your GID is : ${result}`);
+    return res.status(201).render('dynamicPage', { message: `Your GID is : ${result}` });
   } catch (err) {
-    return res.status(400).send(err);
-  }
-}
-
-// this function will handle get student data by its id
-async function handleGetStudent (req, res) {
-  try {
-    const id = req.params.id;
-    const [result] = await getStudent(id);
-    if (!result)
-      return res.status(404).render('no-records');
-    return res.status(200).send(result);
-  } catch (err) {
-    return res.status(500).send(err);
-  }
-}
-
-// this function will handle deletion of student data by id
-async function handleDeleteStudent (req, res) {
-  try {
-    const id = req.params.id;
-    const studentData = await getStudent(id);
-    const result = await deleteStudent(id);
-    if (!result)
-      return res.status(404).render('no-records');
-    return res.status(200).render('record-deleted', { data: studentData });
-  } catch (err) {
-    return res.status(500).send(err);
+    console.error(err);
+    return res.status(400).render('dynamicPage',{ message: 'Failed to Load the Page'});
   }
 }
 
 // exporting the above functions
 module.exports = {
-  handleGetStudents,
   handleRegistration,
-  handleGetStudent,
-  handleCreateStudent,
-  handleDeleteStudent
+  handleCreateStudent
 }

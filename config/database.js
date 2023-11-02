@@ -8,7 +8,12 @@ const pool = sql.createPool({
   database: 'portal'
 });
 // creating a pool connection between the database and the server
-
+try {
+  if(pool)
+    console.log('Database Connected Successfully');
+} catch (error) {
+  console.error(error);
+}
 // exporting the pool connection
 module.exports = pool;
 

@@ -1,10 +1,7 @@
 const express = require('express');
 const { 
-  handleGetStudents, 
   handleRegistration,
   handleCreateStudent, 
-  handleGetStudent, 
-  handleDeleteStudent 
 } = require('../controllers/studentController');
 // importing the controller methods from studentController
 
@@ -20,10 +17,6 @@ router
   .post(handleCreateStudent);
 
 // route for 'registration/:id' will handle GET and DELETE methods
-router
-  .route('/:id')
-  .get(handleGetStudent)
-  .delete(handleDeleteStudent);
 
 // exporting router
 module.exports = router;
