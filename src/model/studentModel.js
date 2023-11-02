@@ -2,27 +2,10 @@ const pool = require('../../config/database')
 let connection;
 // importing the pool connection from database
 
-
 // query to GET all students data
-async function getStudents () {
+async function checkDuplicate () {
   const [result] = await pool.query('SELECT email, phone, roll FROM mrd');
   return result;
-  // result.forEach((res) => {
-  //   console.log(`
-  //     email: ${res.email}
-  //     phone: ${res.phone}
-  //     roll: ${res.roll}
-  //     \n
-  //   `);
-  // });
-}
-
-// getStudents();
-
-// query to GET a single student data
-async function getStudent (id) {
-  const result = await pool.query(`SELECT * FROM mrd WHERE id = ?`, [id])
-  return result[0];
 }
 
 // query to POST student data
@@ -57,8 +40,7 @@ async function deleteStudent (id) {
 
 // exporting the above functions
 module.exports = {
-  getStudents,
-  getStudent,
+  checkDuplicate,
   createStudent,
   deleteStudent
 }

@@ -1,11 +1,8 @@
 const { 
-  getStudents,
-  getStudent,
-  createStudent,
-  deleteStudent
+  checkDuplicate,
+  createStudent
 } = require('../model/studentModel');
 // importing the above methods from studentModel
-
 
 // this function will render the registration page
 async function handleRegistration (req, res) {
@@ -19,6 +16,7 @@ async function handleRegistration (req, res) {
 
 // this function will handle creation of a student
 async function handleCreateStudent (req, res) {
+  flag = true; // flag to check for duplicate entries
   try {
     const {
       college,
@@ -29,23 +27,28 @@ async function handleCreateStudent (req, res) {
       roll,
       year
     } = req.body;
-    const datas = await getStudents();
+    const datas = await checkDuplicate();
     datas.forEach( (data) => {
       if(data.email == email ||
          data.phone == phone ||
          data.roll == roll) {
+          flag = false; // if the if statement is executed then it will be declared as false
           return res.status(409).render('dynamicPage',{ message: 'Duplicate Entry'});
-         }
+        }
     });
-    const result = await createStudent(college,
-      department,
-      email,
-      name,
-      phone,
-      roll,
-      year
-    );
-    return res.status(201).render('dynamicPage', { message: `Your GID is : ${result}` });
+
+    // if flag is true then only the students data will pe POSTed into the db
+    if(flag) { 
+      const result = await createStudent(college,
+        department,
+        email,
+        name,
+        phone,
+        roll,
+        year
+      );
+      return res.status(201).render('dynamicPage', { message: `Your GID is : ${result}` });
+    }
   } catch (err) {
     console.error(err);
     return res.status(400).render('dynamicPage',{ message: 'Failed to Load the Page'});
